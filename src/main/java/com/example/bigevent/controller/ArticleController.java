@@ -16,21 +16,21 @@ import java.util.Map;
 @RequestMapping("/article")
 public class ArticleController {
     @GetMapping("/list")
-    public Result<String> list(@RequestHeader(name="wza", required = false) String token, HttpServletResponse response){
-        // 如果请求头中没有token，直接返回未登录的JSON响应
-        if (token == null || token.isEmpty())  {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return Result.error(" 用户未登录无法访问");
-        }
-
-        // 验证token
-        try {
-            Map<String, Object> claims = JwtUtil.parseToken(token);
-            return Result.success(" 文章数据");
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return Result.error(" 用户未登录无法访问");
-        }
-
+    public Result<String> list(){
+//  @RequestHeader(name="wza", required = false) String token, HttpServletResponse response      // 如果请求头中没有token，直接返回未登录的JSON响应
+//        if (token == null || token.isEmpty())  {
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            return Result.error(" 用户未登录无法访问");
+//        }
+//
+//        // 验证token
+//        try {
+//            Map<String, Object> claims = JwtUtil.parseToken(token);
+//            return Result.success(" 文章数据");
+//        } catch (Exception e) {
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            return Result.error(" 用户未登录无法访问");
+//        }
+        return Result.success(" 文章数据");
     }
 }
