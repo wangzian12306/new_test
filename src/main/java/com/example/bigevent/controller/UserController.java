@@ -106,5 +106,19 @@ public class UserController {
        User user=userService.findByUserName(username);
        return Result.success(user);
     }
+    @PutMapping("/update")
+    public Result update(@RequestBody User user,int leixing) {
+  if(leixing==1){
+      userService.update(user);
+      return Result.success();
+  }else if(leixing==2){
+      user2Service.update(user);
+      return Result.success();
+  }else{
+      return Result.error("类型错误");
+  }
+
+
+    }
 
 }

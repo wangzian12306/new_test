@@ -6,6 +6,10 @@ import com.example.bigevent.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
+
 @Service
 public class UserServiceimpl implements UserService {
     @Autowired
@@ -20,5 +24,11 @@ public class UserServiceimpl implements UserService {
     public void register(String username, String password) {
     //加密后续再加
         userMapper.add(username,password);
+    }
+
+    @Override
+    public void update(User user) {
+        user.setUpdateTime(Timestamp.valueOf(LocalDateTime.now()));
+        userMapper.update(user);
     }
 }

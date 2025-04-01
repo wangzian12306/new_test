@@ -14,5 +14,4 @@ public class User {
     private String userPic; // 头像
     private Date createTime; // 创建时间
     private Date updateTime; // 修改时间
-
 }

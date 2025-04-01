@@ -7,4 +7,6 @@ public interface User2Service {
     User findByUserName(String username);
     //注册
     void register(String username, String password);
+
+    void update(User user);
 }
