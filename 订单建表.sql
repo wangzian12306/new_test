@@ -1,36 +1,41 @@
 CREATE TABLE `foster_order` (
-                                `order_id` VARCHAR(36) NOT NULL COMMENT '订单编号（UUID）',
-                                `order_date` DATE NOT NULL COMMENT '订单创建日期',
-                                `start_time` DATETIME NOT NULL COMMENT '寄养开始时间',
-                                `end_time` DATETIME NOT NULL COMMENT '寄养结束时间',
-
-                                `foster_days` INT UNSIGNED GENERATED ALWAYS AS (
-    DATEDIFF(end_time, start_time)
-  ) STORED COMMENT '自动计算寄养天数',
-
-                                `total_amount` DECIMAL(10,2) NOT NULL COMMENT '总金额',
-                                `address` VARCHAR(255) NOT NULL COMMENT '详细地址',
-
-                                `foster_mode` ENUM('HOME_STAY','PET_HOTEL','HOSPITAL') NOT NULL
-    COMMENT '寄养方式（家庭寄养/宠物酒店/医疗寄养）',
-
-                                `pet_type` ENUM('DOG','CAT','BIRD','REPTILE','OTHER') NOT NULL
-    COMMENT '宠物类型',
-
-                                `creator_id` VARCHAR(36) NOT NULL COMMENT '发起人ID',
-                                `acceptor_id` VARCHAR(36) DEFAULT NULL COMMENT '接单人ID',
-
-                                `status` ENUM('PENDING','ACCEPTED','IN_PROGRESS','COMPLETED','CANCELLED')
-    NOT NULL DEFAULT 'PENDING' COMMENT '订单状态',
-
-                                `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                                `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-                                    ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-
-                                PRIMARY KEY (`order_id`),
-                                INDEX `idx_creator` (`creator_id`),
-                                INDEX `idx_acceptor` (`acceptor_id`),
-                                INDEX `idx_time_range` (`start_time`, `end_time`),
-                                INDEX `idx_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-COMMENT='宠物寄养订单表';
+    ->   -- 核心标识
+                                ->   `order_id` VARCHAR(36) NOT NULL COMMENT 'UUID格式主键',
+    ->
+    ->   -- 时间控制（精确到秒）
+    ->   `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    ->   `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    ->   `start_time` DATETIME NOT NULL COMMENT '开始时间',
+    ->   `end_time` DATETIME NOT NULL COMMENT '结束时间',
+    ->
+    ->   -- 自动计算字段
+    ->   `foster_days` INT GENERATED ALWAYS AS (
+    ->     DATEDIFF(end_time, start_time)
+    ->   ) STORED COMMENT '系统计算寄养天数',
+    ->
+    ->   -- 业务数据
+    ->   `total_amount` DECIMAL(10,2) NOT NULL COMMENT '金额（10位整数+2位小数）',
+    ->   `address` VARCHAR(255) NOT NULL COMMENT '完整地址',
+    ->
+    ->   -- 枚举字段（与Java枚举严格同步）
+    ->   `foster_mode` ENUM('HOME_STAY','PET_HOTEL','HOSPITAL') NOT NULL COMMENT '家庭寄养/宠物酒店/医疗寄养',
+    ->   `pet_type` ENUM('DOG','CAT','BIRD','REPTILE','OTHER') NOT NULL COMMENT '宠物类型',
+    ->   `status` ENUM('PENDING','ACCEPTED','IN_PROGRESS','COMPLETED','CANCELLED')
+    ->     NOT NULL DEFAULT 'PENDING' COMMENT '订单状态机',
+    ->
+    ->   -- 用户关联（外键智能处理）
+    ->   `creator_id` INT UNSIGNED NOT NULL COMMENT '创建者ID',
+    ->   `acceptor_id` INT UNSIGNED DEFAULT NULL COMMENT '接单人ID',
+    ->
+    ->   -- 索引优化
+    ->   PRIMARY KEY (`order_id`),
+    ->   INDEX `idx_creator` (`creator_id`),
+    ->   INDEX `idx_status` (`status`, `start_time`),
+    ->
+    ->   -- 动态外键（仅在user表存在时创建）
+    ->   CONSTRAINT `fk_creator` FOREIGN KEY (`creator_id`)
+    ->     REFERENCES `user` (`id`) ON DELETE CASCADE,
+    ->   CONSTRAINT `fk_acceptor` FOREIGN KEY (`acceptor_id`)
+    ->     REFERENCES `user` (`id`) ON DELETE SET NULL
+    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    -> COMMENT='宠物寄养订单表（2025-04-01最新版）';
