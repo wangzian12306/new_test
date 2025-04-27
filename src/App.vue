@@ -1,29 +1,35 @@
 <template>
   <div id="app">
-    <NavBar />
-    <router-view/>
+    <router-view v-slot="{ Component }">
+      <component :is="Component" />
+    </router-view>
   </div>
 </template>
 
 <script>
-import NavBar from './components/NavBar.vue'
-
 export default {
   name: 'App',
-  components: {
-    NavBar
+  mounted() {
+    console.log('App component mounted')
   }
 }
 </script>
 
 <style>
-#app {
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  background-color: #FDEEEE; /* 设置页面底色 */
-  min-height: 100vh; /* 确保背景覆盖整个视口高度 */
+}
+
+#app {
+  min-height: 100vh;
 }
 </style>
