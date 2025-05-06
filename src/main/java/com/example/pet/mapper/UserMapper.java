@@ -15,12 +15,11 @@ public interface UserMapper {
    // @Update("update user set nickname=#{nickname}, email=#{email}, update_time=#{updateTime}")
    // void update(User user);
 
-
     // 根据用户ID查询用户
     @Select("SELECT * FROM users WHERE user_id=#{userId}")
     User findByUserId(Integer userId);
 
-    // 查询特定字段方法
+    // 查询
     @Select("SELECT username FROM users WHERE user_id=#{userId}")
     String findUsernameById(Integer userId);
 
@@ -47,7 +46,7 @@ public interface UserMapper {
             "account_status=#{accountStatus}, update_time=NOW() WHERE user_id=#{userId}")
     void update(User user);
 
-    // 更新单个字段方法
+    // 更新单个字段
     @Update("UPDATE users SET favorites=#{favorites}, update_time=NOW() WHERE user_id=#{userId}")
     void updateFavorites(@Param("userId") Integer userId, @Param("favorites") String favorites);
 

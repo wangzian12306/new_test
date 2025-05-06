@@ -71,7 +71,7 @@ public class UserController {
 
     @PutMapping("/update")
     public Result update(@RequestBody User user) {
-            userService.update(user);
+            userService.updateUser(user);
             return Result.success();
     }
 
